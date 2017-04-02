@@ -24,6 +24,7 @@ settings = {
 handlers = [
     (r"/user/login", handler.login_handler.LoginHandler),
     (r"/user/register", handler.register_handler.RegisterHandler),
+    (r"/message/list", handler.message_list_handler.MessageListHandler),
 ]
 
 if __name__ == "__main__":

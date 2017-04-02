@@ -31,6 +31,12 @@ class Register(BasePage):
         """
         username = str(self._get_param("username"))
         password = str(self._get_param("password"))
+        if self.__is_exist(username, password) is True:
+            return {
+                "errno": -1,
+                "errmsg": "account has exist",
+            }
+
         create_user_res = User().add_new_user(username, password)
         if create_user_res is None:
             return {
@@ -44,3 +50,15 @@ class Register(BasePage):
                 "uid": uid[0]
             }
         }
+
+    def __is_exist(self, username, password):
+        """
+        
+        :param username: 
+        :param password: 
+        :return: 
+        """
+        uid = User().get_uid_by_name_and_pwd(username, password)
+        if uid[0] is None:
+            return False
+        return True

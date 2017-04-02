@@ -16,7 +16,7 @@ class SQL(object):
     def __init__(self):
         self.logger = logging.getLogger(name="model")
 
-    def execute_one(self, sql, arg):
+    def execute_one(self, sql, arg=()):
         """
         执行sql语句并提交，适用于执行语句
         :param sql: sql语句
@@ -46,7 +46,7 @@ class SQL(object):
             self.logger.error("sql_operations.execute_one方法sql语句执行失败")
             raise e
 
-    def fetch_all(self, sql, arg):
+    def fetch_all(self, sql, arg=()):
         """
         执行sql语句并获取所有数据，适用于select语句
         :param sql: sql语句
@@ -76,7 +76,7 @@ class SQL(object):
             self.logger.error("sql_operations.fetch_all方法sql语句执行失败")
             raise e
 
-    def fetch_one(self, sql, arg):
+    def fetch_one(self, sql, arg=()):
         """
         执行sql语句并获取一条数据，适用于select语句
         :param sql: sql语句
