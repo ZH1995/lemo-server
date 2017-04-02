@@ -1,11 +1,13 @@
-# Created by zh1995 on 17-4-1
 # -*- coding: UTF-8 -*-
+# @file   server
+# @author zh1995
+# @date   17-4-1
+# @brief
 
 import os
 import sys
 import handler
 import logging.config
-import tornado.web
 import tornado.ioloop
 from tornado.options import define, options
 
@@ -20,7 +22,7 @@ settings = {
 }
 
 handlers = [
-    (r"/user/login", handler.user_handler.confirm_login_handler.ConfirmLoginHandler),
+    (r"/user/login", handler.login_handler.ConfirmLoginHandler),
 ]
 
 if __name__ == "__main__":

@@ -1,10 +1,8 @@
 # -*- coding: UTF-8 -*-
-"""
-    @file   db_pool
-    @author zh1995
-    @date   17-4-1
-    @brief    
-"""
+# @file   db_pool
+# @author zh1995
+# @date   17-4-1
+# @brief
 
 import MySQLdb
 from DBUtils.PooledDB import PooledDB
