@@ -6,11 +6,11 @@
 
 import json
 import logging
-import traceback
 import tornado.web
 from model.service.page.login import Login
 
-class ConfirmLoginHandler(tornado.web.RequestHandler):
+
+class LoginHandler(tornado.web.RequestHandler):
     """
 
     """
@@ -25,7 +25,7 @@ class ConfirmLoginHandler(tornado.web.RequestHandler):
         @:param string account
         @:param string passward
         """
-        self.logger.info("ConfirmLoginHandler_start")
+        self.logger.info("LoginHandler_start")
 
         # argument = json.loads(self.request.body)
         # self.logger.info("arguments=%s", argument)
@@ -36,8 +36,8 @@ class ConfirmLoginHandler(tornado.web.RequestHandler):
             "password": self.get_argument("password"),
         }
 
-        login_info = Login("Login").execute(req)
-        login_info = json.dumps(login_info).encode('utf8')
+        uid_info = Login("Login").execute(req)
+        uid_info = json.dumps(uid_info).encode('utf8')
 
-        self.logger.info("ConfirmLoginHandler_over")
-        self.write(login_info)
+        self.logger.info("LoginHandler_over")
+        self.write(uid_info)

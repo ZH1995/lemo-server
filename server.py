@@ -22,7 +22,8 @@ settings = {
 }
 
 handlers = [
-    (r"/user/login", handler.login_handler.ConfirmLoginHandler),
+    (r"/user/login", handler.login_handler.LoginHandler),
+    (r"/user/register", handler.register_handler.RegisterHandler),
 ]
 
 if __name__ == "__main__":

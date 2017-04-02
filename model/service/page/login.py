@@ -31,7 +31,7 @@ class Login(BasePage):
         """
         username = str(self._get_param("username"))
         password = str(self._get_param("password"))
-        uid = User().select_uid_by_name_and_pwd(username, password)
+        uid = User().get_uid_by_name_and_pwd(username, password)
         return {
             "data": {
                 "uid": uid[0]

@@ -5,3 +5,4 @@
 # @brief
 
 import login_handler
+import register_handler
