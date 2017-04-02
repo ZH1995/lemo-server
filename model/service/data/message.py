@@ -37,3 +37,13 @@ class Message(object):
         sql_sentence = "SELECT COUNT(1) FROM tblMessage"
         res = SQL().fetch_all(sql_sentence)
         return res[0]
+
+    def get_message_content(self, message_id):
+        """
+        
+        :param message_id: 
+        :return: 
+        """
+        sql_sentence = "SELECT message_title, cover_pic, author_name, author_img, message_content, look_num, good_num, create_time FROM tblMessage WHERE message_id=%s"
+        param_list = (message_id, )
+        return SQL().fetch_one(sql_sentence, param_list)
