@@ -8,3 +8,4 @@ import base_page
 import login
 import register
 import message_content
+import hotspot

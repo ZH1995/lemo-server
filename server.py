@@ -26,6 +26,7 @@ handlers = [
     (r"/user/register", handler.register_handler.RegisterHandler),
     (r"/message/list", handler.message_list_handler.MessageListHandler),
     (r"/message/content", handler.message_content_handler.MessageContentHandler),
+    (r"/message/hotspot", handler.hotspot_handler.HotspotHandler),
 ]
 
 if __name__ == "__main__":
