@@ -20,16 +20,21 @@ class MessageContentHandler(tornado.web.RequestHandler):
         self.add_header("Access-Control-Allow-Origin", "*")
         self.handler_name = "MessageContent"
 
-    def get(self):
+    def post(self):
         """
 
         :return: 
         """
         self.logger.info("%s_start", self.handler_name)
+        try:
+            argument = json.loads(self.request.body)
+            self.logger.info("arguments=%s", argument)
+        except Exception, e:
+            self.logger.error("e = %s", e)
+            return
         req = {
-            "message_id": self.get_argument("message_id"),
+            "message_id": argument["message_id"],
         }
-
         message_content = MessageContent("MessageContent").execute(req)
         message_content = json.dumps(message_content).encode('utf8')
 

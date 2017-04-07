@@ -19,23 +19,23 @@ class LoginHandler(tornado.web.RequestHandler):
         self.logger = logging.getLogger(name='handler')
         self.add_header("Access-Control-Allow-Origin", "*")
 
-    def get(self):
+    def post(self):
         """
         通过账号、密码登录
         @:param string account
         @:param string passward
         """
         self.logger.info("LoginHandler_start")
-
-        # argument = json.loads(self.request.body)
-        # self.logger.info("arguments=%s", argument)
-        # username = argument['username']
-        # password = argument['password']
+        try:
+            argument = json.loads(self.request.body)
+            self.logger.info("arguments=%s", argument)
+        except Exception, e:
+            self.logger.error("e = %s", e)
+            return
         req = {
-            "username": self.get_argument("username"),
-            "password": self.get_argument("password"),
+            "phone_number": argument['phoneNumber'],
+            "password": argument['password'],
         }
-
         uid_info = Login("Login").execute(req)
         uid_info = json.dumps(uid_info).encode('utf8')
 

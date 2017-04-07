@@ -20,17 +20,23 @@ class RegisterHandler(tornado.web.RequestHandler):
         self.add_header("Access-Control-Allow-Origin", "*")
         self.handler_name = "RegisterHandler"
 
-    def get(self):
+    def post(self):
         """
         
         :return: 
         """
         self.logger.info("%s_start", self.handler_name)
+        try:
+            argument = json.loads(self.request.body)
+            self.logger.info("arguments=%s", argument)
+        except Exception, e:
+            self.logger.error("e = %s", e)
+            return
         req = {
-            "username": self.get_argument("username"),
-            "password": self.get_argument("password"),
+            "username": argument["username"],
+            "phone_number": argument["phoneNumber"],
+            "password": argument["password"],
         }
-
         uid_info = Register("Register").execute(req)
         uid_info = json.dumps(uid_info).encode('utf8')
 

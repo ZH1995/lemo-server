@@ -20,7 +20,7 @@ class HotspotHandler(tornado.web.RequestHandler):
         self.add_header("Access-Control-Allow-Origin", "*")
         self.handler_name = "HotspotContent"
 
-    def get(self):
+    def post(self):
         """
 
         :return: 

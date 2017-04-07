@@ -20,17 +20,22 @@ class MessageListHandler(tornado.web.RequestHandler):
         self.add_header("Access-Control-Allow-Origin", "*")
         self.handler_name = "MessageListHandler"
 
-    def get(self):
+    def post(self):
         """
 
         :return: 
         """
         self.logger.info("%s_start", self.handler_name)
+        try:
+            argument = json.loads(self.request.body)
+            self.logger.info("arguments=%s", argument)
+        except Exception, e:
+            self.logger.error("e = %s", e)
+            return
         req = {
-            "page": self.get_argument("page"),
-            "limit": self.get_argument("limit"),
+            "page": argument['currentPage'],
+            "limit": argument['pageSize'],
         }
-
         message_list = MessageList("MessageList").execute(req)
         message_list = json.dumps(message_list).encode('utf8')
 

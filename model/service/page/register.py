@@ -20,6 +20,8 @@ class Register(BasePage):
         """
         if self._get_param("username") is None:
             raise Exception("User name is invalid")
+        if self._get_param("phone_number") is None:
+            raise Exception("Phone number is invalid")
         if self._get_param("password") is None:
             raise Exception("Password is invalid")
 
@@ -30,35 +32,36 @@ class Register(BasePage):
         :return: 
         """
         username = str(self._get_param("username"))
+        phone_number = str(self._get_param("phone_number"))
         password = str(self._get_param("password"))
-        if self.__is_exist(username, password) is True:
+        if self.__is_exist(phone_number, password) is True:
             return {
                 "errno": -1,
                 "errmsg": "account has exist",
             }
 
-        create_user_res = User().add_new_user(username, password)
+        create_user_res = User().add_new_user(username, phone_number, password)
         if create_user_res is None:
             return {
                 "errno": -1,
                 "errmsg": "create account fail",
             }
 
-        uid = User().get_uid_by_name_and_pwd(username, password)
+        uid = User().get_uid_by_phone_and_pwd(phone_number, password)
         return {
             "data": {
                 "uid": uid[0]
             }
         }
 
-    def __is_exist(self, username, password):
+    def __is_exist(self, phone_number, password):
         """
         
-        :param username: 
+        :param phone_number: 
         :param password: 
         :return: 
         """
-        uid = User().get_uid_by_name_and_pwd(username, password)
-        if uid[0] is None:
+        uid = User().get_uid_by_phone_and_pwd(phone_number, password)
+        if uid is None:
             return False
         return True

@@ -18,8 +18,8 @@ class Login(BasePage):
         参数校验
         :return: 
         """
-        if self._get_param("username") is None:
-            raise Exception("User name is invalid")
+        if self._get_param("phone_number") is None:
+            raise Exception("Phone number is invalid")
         if self._get_param("password") is None:
             raise Exception("Password is invalid")
 
@@ -29,9 +29,9 @@ class Login(BasePage):
         :param req: 
         :return: 
         """
-        username = str(self._get_param("username"))
+        phone_number = str(self._get_param("phone_number"))
         password = str(self._get_param("password"))
-        uid = User().get_uid_by_name_and_pwd(username, password)
+        uid = User().get_uid_by_phone_and_pwd(phone_number, password)
         return {
             "data": {
                 "uid": uid[0]
