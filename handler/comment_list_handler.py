@@ -1,16 +1,15 @@
 # -*- coding: UTF-8 -*-
-# @file   message_list_handler
+# @file   comment_list_handler
 # @author zh1995
-# @date   17-4-2
+# @date   17-4-17
 # @brief
-
 import logging
 import json
 import tornado.web
-from model.service.page.message_list import MessageList
+from model.service.page.comment_list import CommentList
 
 
-class MessageListHandler(tornado.web.RequestHandler):
+class CommentListHandler(tornado.web.RequestHandler):
     """
 
     """
@@ -18,7 +17,7 @@ class MessageListHandler(tornado.web.RequestHandler):
     def initialize(self):
         self.logger = logging.getLogger(name='handler')
         self.add_header("Access-Control-Allow-Origin", "*")
-        self.handler_name = "MessageListHandler"
+        self.handler_name = "CommentList"
 
     def post(self):
         """
@@ -34,12 +33,13 @@ class MessageListHandler(tornado.web.RequestHandler):
             return
         req = {
             "uid": argument['uid'],
-            "tag_id": argument['tagId'],
+            "message_id": argument['messageId'],
             "current_page": argument['currentPage'],
             "page_size": argument['pageSize'],
         }
-        message_list = MessageList("MessageList").execute(req)
-        message_list = json.dumps(message_list).encode('utf8')
+        comment_list = CommentList("CommentList").execute(req)
+        comment_list = json.dumps(comment_list).encode('utf8')
 
         self.logger.info("%s_over", self.handler_name)
-        self.write(message_list)
+        self.write(comment_list)
+

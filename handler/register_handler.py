@@ -33,12 +33,12 @@ class RegisterHandler(tornado.web.RequestHandler):
             self.logger.error("e = %s", e)
             return
         req = {
-            "username": argument["username"],
+            "username": argument["userName"],
             "phone_number": argument["phoneNumber"],
             "password": argument["password"],
         }
-        uid_info = Register("Register").execute(req)
-        uid_info = json.dumps(uid_info).encode('utf8')
+        user_info = Register("Register").execute(req)
+        user_info = json.dumps(user_info).encode('utf8')
 
         self.logger.info("%s_over", self.handler_name)
-        self.write(uid_info)
+        self.write(user_info)

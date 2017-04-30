@@ -6,3 +6,5 @@
 
 import user
 import message
+import comment
+import user_message_action_map

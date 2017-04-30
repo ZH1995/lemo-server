@@ -1,16 +1,15 @@
 # -*- coding: UTF-8 -*-
-# @file   message_list_handler
+# @file   modify_info_handler
 # @author zh1995
-# @date   17-4-2
+# @date   17-4-17
 # @brief
-
-import logging
 import json
+import logging
 import tornado.web
-from model.service.page.message_list import MessageList
+from model.service.page.modify_user_info import ModifyUserInfo
 
 
-class MessageListHandler(tornado.web.RequestHandler):
+class ModifyUserInfoHandler(tornado.web.RequestHandler):
     """
 
     """
@@ -18,7 +17,7 @@ class MessageListHandler(tornado.web.RequestHandler):
     def initialize(self):
         self.logger = logging.getLogger(name='handler')
         self.add_header("Access-Control-Allow-Origin", "*")
-        self.handler_name = "MessageListHandler"
+        self.handler_name = "ModifyUserInfoHandler"
 
     def post(self):
         """
@@ -33,13 +32,14 @@ class MessageListHandler(tornado.web.RequestHandler):
             self.logger.error("e = %s", e)
             return
         req = {
-            "uid": argument['uid'],
-            "tag_id": argument['tagId'],
-            "current_page": argument['currentPage'],
-            "page_size": argument['pageSize'],
+            "uid": argument["uid"],
+            "username": argument["userName"],
+            "user_sign": argument["userSign"],
+            "head_img": argument["headImg"],
         }
-        message_list = MessageList("MessageList").execute(req)
-        message_list = json.dumps(message_list).encode('utf8')
+        user_info = ModifyUserInfo("ModifyUserInfo").execute(req)
+        user_info = json.dumps(user_info).encode('utf8')
 
         self.logger.info("%s_over", self.handler_name)
-        self.write(message_list)
+        self.write(user_info)
+

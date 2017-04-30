@@ -9,3 +9,7 @@ import login
 import register
 import message_content
 import hotspot
+import user_message_action
+import user_action_list
+import comment_list
+import modify_user_info

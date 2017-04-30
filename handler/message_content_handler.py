@@ -33,7 +33,8 @@ class MessageContentHandler(tornado.web.RequestHandler):
             self.logger.error("e = %s", e)
             return
         req = {
-            "message_id": argument["message_id"],
+            "uid": argument["uid"],
+            "message_id": argument["messageId"]
         }
         message_content = MessageContent("MessageContent").execute(req)
         message_content = json.dumps(message_content).encode('utf8')

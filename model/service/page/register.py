@@ -3,7 +3,7 @@
 # @author zh1995
 # @date   17-4-1
 # @brief
-
+import random
 from base_page import BasePage
 from model.service.data.user import User
 
@@ -31,7 +31,7 @@ class Register(BasePage):
         :param req: 
         :return: 
         """
-        username = str(self._get_param("username"))
+        username = u''.join(self._get_param("username")).encode("utf-8")
         phone_number = str(self._get_param("phone_number"))
         password = str(self._get_param("password"))
         if self.__is_exist(phone_number, password) is True:
@@ -40,17 +40,28 @@ class Register(BasePage):
                 "errmsg": "account has exist",
             }
 
-        create_user_res = User().add_new_user(username, phone_number, password)
-        if create_user_res is None:
+        # 产生随机图片
+        random_index = random.randint(1, 7)
+        head_img = "localhost:80/headImg/" + str(random_index) + ".jpg"
+        ds_user = User()
+        create_user_res = ds_user.add_new_user(username, phone_number, password, head_img)
+        if create_user_res == 0:
             return {
                 "errno": -1,
                 "errmsg": "create account fail",
             }
 
-        uid = User().get_uid_by_phone_and_pwd(phone_number, password)
+        user_info = ds_user.get_user_info_by_phone_and_pwd(phone_number, password)
+        if user_info is None:
+            return {
+                "errno": -1,
+            }
         return {
             "data": {
-                "uid": uid[0]
+                "uid": user_info[0],
+                "uname": user_info[1],
+                "headImg": user_info[2],
+                "userSign": user_info[3]
             }
         }
 
@@ -61,7 +72,8 @@ class Register(BasePage):
         :param password: 
         :return: 
         """
-        uid = User().get_uid_by_phone_and_pwd(phone_number, password)
+        ds_user = User()
+        uid = ds_user.get_user_info_by_phone_and_pwd(phone_number, password)
         if uid is None:
             return False
         return True

@@ -36,8 +36,9 @@ class LoginHandler(tornado.web.RequestHandler):
             "phone_number": argument['phoneNumber'],
             "password": argument['password'],
         }
-        uid_info = Login("Login").execute(req)
-        uid_info = json.dumps(uid_info).encode('utf8')
+        self.logger.info(req)
+        user_info = Login("Login").execute(req)
+        user_info = json.dumps(user_info).encode('utf8')
 
         self.logger.info("LoginHandler_over")
-        self.write(uid_info)
+        self.write(user_info)

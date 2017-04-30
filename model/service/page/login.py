@@ -31,9 +31,19 @@ class Login(BasePage):
         """
         phone_number = str(self._get_param("phone_number"))
         password = str(self._get_param("password"))
-        uid = User().get_uid_by_phone_and_pwd(phone_number, password)
+
+        ds_user = User()
+        user_info = ds_user.get_user_info_by_phone_and_pwd(phone_number, password)
+
+        if user_info is None:
+            return {
+                "errno": -1
+            }
         return {
             "data": {
-                "uid": uid[0]
+                "uid": user_info[0],
+                "uname": user_info[1],
+                "headImg": user_info[2],
+                "userSign": user_info[3]
             }
         }

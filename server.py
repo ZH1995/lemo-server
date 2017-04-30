@@ -24,8 +24,13 @@ settings = {
 handlers = [
     (r"/user/login", handler.login_handler.LoginHandler),
     (r"/user/register", handler.register_handler.RegisterHandler),
+    (r"/user/modify", handler.modify_user_info_handler.ModifyUserInfoHandler),
     (r"/message/list", handler.message_list_handler.MessageListHandler),
     (r"/message/content", handler.message_content_handler.MessageContentHandler),
+    (r"/message/userAction", handler.user_message_action_handler.UserMessageActionHandler),
+    (r"/action/list", handler.user_action_list_handler.UserActionListHandler),
+    (r"/comment/write", handler.write_comment_handler.WriteCommentHandler),
+    (r"/comment/list", handler.comment_list_handler.CommentListHandler),
     (r"/message/hotspot", handler.hotspot_handler.HotspotHandler),
 ]
 

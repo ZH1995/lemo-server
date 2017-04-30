@@ -9,4 +9,8 @@ import register_handler
 import message_list_handler
 import message_content_handler
 import hotspot_handler
-
+import user_action_list_handler
+import user_message_action_handler
+import write_comment_handler
+import comment_list_handler
+import modify_user_info_handler
