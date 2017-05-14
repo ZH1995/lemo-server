@@ -79,3 +79,35 @@ class UserMessageActionMap(object):
         sql_sentence = "SELECT message_id FROM tblUserMessageActionMap WHERE uid=%s AND user_action=%s AND status=1 ORDER BY create_time DESC LIMIT %s, %s"
         param_list = (uid, user_action, offset, limit)
         return self._dao_sql.fetch_all(sql_sentence, param_list)
+
+    def get_online_record_count_by_uid(self, uid):
+        """
+        
+        :param uid: 
+        :return: 
+        """
+        sql_sentence = "SELECT COUNT(1) FROM tblUserMessageActionMap WHERE status=1 and uid=%s"
+        param_list = (uid, )
+        res = self._dao_sql.fetch_all(sql_sentence, param_list)
+        return res[0]
+
+    def get_msg_map_list_by_uid(self, uid):
+        """
+        
+        :param uid: 
+        :return: 
+        """
+        sql_sentence = "SELECT message_id FROM tblUserMessageActionMap WHERE uid=%s AND status=1"
+        param_list = (uid, )
+        return self._dao_sql.fetch_all(sql_sentence, param_list)
+
+    def get_user_map_list(self, message_id_list):
+        """
+        
+        :param message_id_list: 
+        :return: 
+        """
+        sql_sentence = "SELECT uid FROM tblUserMessageActionMap WHERE status=1 AND message_id in (%s)"
+        new_message_id_list = ', '.join(map(lambda x: '%s', message_id_list))
+        sql_sentence = sql_sentence % (new_message_id_list,)
+        return self._dao_sql.fetch_all(sql_sentence, tuple(message_id_list))

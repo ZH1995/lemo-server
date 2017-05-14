@@ -66,7 +66,6 @@ class BasePage(object):
         """
         unix_time = time.time()
         key = ip + ":" + self.pageName + ":" + str(unix_time)
-        self.logger.info("key=%s", key)
         pool = redis.ConnectionPool(host='127.0.0.1', port=6379, db=0)
         r = redis.Redis(connection_pool=pool)
         if r.exists(key):
@@ -88,7 +87,7 @@ class BasePage(object):
         """
         return
 
-    def _get_param(self, param_name = ''):
+    def _get_param(self, param_name=''):
         """
         获取参数
         :param param_name: 

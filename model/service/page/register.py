@@ -42,7 +42,7 @@ class Register(BasePage):
 
         # 产生随机图片
         random_index = random.randint(1, 7)
-        head_img = "localhost:80/headImg/" + str(random_index) + ".jpg"
+        head_img = "http://localhost:80/headImg/" + str(random_index) + ".jpg"
         ds_user = User()
         create_user_res = ds_user.add_new_user(username, phone_number, password, head_img)
         if create_user_res == 0:

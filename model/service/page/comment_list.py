@@ -72,7 +72,7 @@ class CommentList(BasePage):
             new_comment_list.append(
                 {
                     "authorId": comment[0],
-                    "authorHeadImg": head_img,
+                    "authorHeadImg": head_img[0],
                     "authorName": name[0],
                     "commentContent": comment[1],
                     "isReply": comment[2],

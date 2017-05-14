@@ -98,3 +98,14 @@ class Message(object):
         new_message_id_list = ', '.join(map(lambda x: '%s', message_id_list))
         sql_sentence = sql_sentence % (new_message_id_list, )
         return self._dao_sql.fetch_all(sql_sentence, tuple(message_id_list))
+
+    def get_message_list_by_look_num(self, offset=0, limit=10):
+        """
+        
+        :param offset: 
+        :param limit: 
+        :return: 
+        """
+        sql_sentence = "SELECT message_id, message_title, cover_pic FROM tblMessage ORDER BY look_num DESC AND create_time DESC LIMIT %s, %s"
+        param_list = (offset, limit)
+        return self._dao_sql.fetch_all(sql_sentence, param_list)
