@@ -37,6 +37,7 @@ class MessageListHandler(tornado.web.RequestHandler):
             "tag_id": argument['tagId'],
             "current_page": argument['currentPage'],
             "page_size": argument['pageSize'],
+            "ip": self.request.remote_ip,
         }
         message_list = MessageList("MessageList").execute(req)
         message_list = json.dumps(message_list).encode('utf8')

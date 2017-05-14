@@ -35,6 +35,7 @@ class LoginHandler(tornado.web.RequestHandler):
         req = {
             "phone_number": argument['phoneNumber'],
             "password": argument['password'],
+            "ip": self.request.remote_ip,
         }
         self.logger.info(req)
         user_info = Login("Login").execute(req)

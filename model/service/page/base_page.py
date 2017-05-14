@@ -6,6 +6,8 @@
 
 import logging
 import traceback
+import redis
+import time
 
 
 class BasePage(object):
@@ -36,6 +38,8 @@ class BasePage(object):
         }
         try:
             self._check_param()
+            if self._limit_accept(self.req["ip"]) is False:
+                return self.res
             res = self._execute(req)
             if isinstance(res, dict) and isinstance(self.res, dict):
                 self.res.update(res)
@@ -54,6 +58,27 @@ class BasePage(object):
         :return: 
         """
         return
+
+    def _limit_accept(self, ip):
+        """
+        
+        :return: 
+        """
+        unix_time = time.time()
+        key = ip + ":" + self.pageName + ":" + str(unix_time)
+        self.logger.info("key=%s", key)
+        pool = redis.ConnectionPool(host='127.0.0.1', port=6379, db=0)
+        r = redis.Redis(connection_pool=pool)
+        if r.exists(key):
+            r.incr(key)
+            count = int(r.get(key))
+            if count > 10:
+                return False
+        else:
+            r.set(key, 1)
+            expired_time = 2
+            r.expire(key, expired_time)
+        return True
 
     def _execute(self, req):
         """

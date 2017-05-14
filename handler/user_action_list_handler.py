@@ -36,6 +36,7 @@ class UserActionListHandler(tornado.web.RequestHandler):
             "user_action": argument["userAction"],
             "current_page": argument['currentPage'],
             "page_size": argument['pageSize'],
+            "ip": self.request.remote_ip,
         }
         action_list = UserActionList("UserActionList").execute(req)
         action_list = json.dumps(action_list).encode('utf8')

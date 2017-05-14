@@ -36,6 +36,7 @@ class ModifyUserInfoHandler(tornado.web.RequestHandler):
             "username": argument["userName"],
             "user_sign": argument["userSign"],
             "head_img": argument["headImg"],
+            "ip": self.request.remote_ip,
         }
         user_info = ModifyUserInfo("ModifyUserInfo").execute(req)
         user_info = json.dumps(user_info).encode('utf8')

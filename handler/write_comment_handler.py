@@ -35,7 +35,8 @@ class WriteCommentHandler(tornado.web.RequestHandler):
             "uid": argument["uid"],
             "reply_uid": argument["replyUid"],
             "message_id": argument["messageId"],
-            "comment_content": argument["commentContent"]
+            "comment_content": argument["commentContent"],
+            "ip": self.request.remote_ip,
         }
         write_comment_res = WriteComment("WriteComment").execute(req)
         write_comment_res = json.dumps(write_comment_res).encode('utf8')

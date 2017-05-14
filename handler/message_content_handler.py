@@ -34,7 +34,8 @@ class MessageContentHandler(tornado.web.RequestHandler):
             return
         req = {
             "uid": argument["uid"],
-            "message_id": argument["messageId"]
+            "message_id": argument["messageId"],
+            "ip": self.request.remote_ip,
         }
         message_content = MessageContent("MessageContent").execute(req)
         message_content = json.dumps(message_content).encode('utf8')

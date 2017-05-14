@@ -35,7 +35,8 @@ class UserMessageActionHandler(tornado.web.RequestHandler):
             "uid": argument["uid"],
             "message_id": argument["messageId"],
             "status": argument["status"],
-            "user_action": argument["userAction"]
+            "user_action": argument["userAction"],
+            "ip": self.request.remote_ip,
         }
         action_res = UserMessageAction("UserMessageAction").execute(req)
         action_res = json.dumps(action_res).encode('utf8')

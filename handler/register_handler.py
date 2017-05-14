@@ -36,6 +36,7 @@ class RegisterHandler(tornado.web.RequestHandler):
             "username": argument["userName"],
             "phone_number": argument["phoneNumber"],
             "password": argument["password"],
+            "ip": self.request.remote_ip,
         }
         user_info = Register("Register").execute(req)
         user_info = json.dumps(user_info).encode('utf8')

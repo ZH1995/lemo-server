@@ -36,6 +36,7 @@ class CommentListHandler(tornado.web.RequestHandler):
             "message_id": argument['messageId'],
             "current_page": argument['currentPage'],
             "page_size": argument['pageSize'],
+            "ip": self.request.remote_ip,
         }
         comment_list = CommentList("CommentList").execute(req)
         comment_list = json.dumps(comment_list).encode('utf8')
