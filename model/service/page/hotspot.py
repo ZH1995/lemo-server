@@ -164,8 +164,6 @@ class Hotspot(BasePage):
         message_list = ds_message.get_message_list_by_message_id_list(mid_list)
         return message_list
 
-
-
     def _format_message_list(self, message_list):
         """
         格式化文章列表
