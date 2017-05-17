@@ -67,7 +67,6 @@ mid_user_dict = recommend_obj.get_mid_user_dict(mid_list)
 uid_list = recommend_obj.get_all_uid_list()
 uid_mid_dict = recommend_obj.get_uid_mid_dict(uid_list)
 
-exit()
 
 # redis操作，缓存基于用户推荐用到的信息
 pool = redis.ConnectionPool(host="127.0.0.1", port=6379, db=0)
@@ -77,15 +76,17 @@ for uid in uid_mid_dict:
     key_name = "recommend_uid_" + str(uid)
     if r.exists(key_name):
         r.delete(key_name)
-    r.lpush(key_name, uid_mid_dict[uid])
-    r.expire(key_name, 600)
+    for item in uid_mid_dict[uid]:
+        r.lpush(key_name, item)
+    r.expire(key_name, 3600)
 
 for mid in mid_user_dict:
     key_name = "recommend_mid_" + str(mid)
     if r.exists(key_name):
         r.delete(key_name)
-    r.lpush(key_name, mid_user_dict[mid])
-    r.expire(key_name, 600)
+    for item in mid_user_dict[mid]:
+        r.lpush(key_name, item)
+    r.expire(key_name, 3600)
 print "done\n"
 
 

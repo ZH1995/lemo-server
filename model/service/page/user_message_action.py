@@ -45,7 +45,7 @@ class UserMessageAction(BasePage):
         # 下线状态
         if status == 0:
             # 置为上线
-            res = ds_user_message_action_map.update_status_by_map_id(map_id, status)
+            res = ds_user_message_action_map.update_status_by_map_id(map_id[0], status)
             # 下线点赞写Message表
             if user_action == 1 and ds_message.get_good_num_by_message_id(message_id) > 0:
                 ds_message.update_good_num_by_message_id_and_status(message_id, status)
@@ -54,7 +54,7 @@ class UserMessageAction(BasePage):
             if map_id is None:
                 res = ds_user_message_action_map.add_new_action_map(uid, message_id, user_action)
             else:
-                res = ds_user_message_action_map.update_status_by_map_id(map_id, status)
+                res = ds_user_message_action_map.update_status_by_map_id(map_id[0], status)
                 # 上线点赞写Message表
                 if user_action == 1:
                     ds_message.update_good_num_by_message_id_and_status(message_id, status)

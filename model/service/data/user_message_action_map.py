@@ -89,7 +89,7 @@ class UserMessageActionMap(object):
         sql_sentence = "SELECT COUNT(1) FROM tblUserMessageActionMap WHERE status=1 and uid=%s"
         param_list = (uid, )
         res = self._dao_sql.fetch_all(sql_sentence, param_list)
-        return res[0]
+        return res[0][0]
 
     def get_msg_map_list_by_uid(self, uid):
         """

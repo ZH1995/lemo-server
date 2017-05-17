@@ -44,9 +44,11 @@ class Hotspot(BasePage):
         # 没有交互查数据库
         if record_count == 0:
             hotspot_list = self._get_normal_recommend_message_list(uid, offset, page_size)
+            self.logger.info("没有交互")
         # 有交互进行推荐策略
         else:
             hotspot_list = self._get_user_recommend_message_list(uid, offset, page_size)
+            self.logger.info("有交互")
         return {
             "data": {
                 "list": self._format_message_list(hotspot_list)
@@ -66,7 +68,10 @@ class Hotspot(BasePage):
         user_key_name = "recommend_uid_" + str(uid)
         if r.exists(user_key_name) is False:
             return False
-        mid_list = r.lrange(user_key_name, 0, r.llen(user_key_name))
+        mid_list = r.lrange(user_key_name, 0, -1)
+        self.logger.info("有关文章")
+        self.logger.info(mid_list)
+
         if len(mid_list) is 0:
             return False
         # 获取与当前用户相关的其他用户
@@ -75,11 +80,13 @@ class Hotspot(BasePage):
             mid_key_name = "recommend_mid_" + str(mid)
             if r.exists(mid_key_name) is False:
                 continue
-            mid_uid_list = r.lrange(mid_key_name, 0, r.llen(mid_key_name))
+            mid_uid_list = r.lrange(mid_key_name, 0, -1)
             for other_uid in mid_uid_list:
-                if other_uid == uid or other_uid in other_uid_list:
+                if int(other_uid) == uid or int(other_uid) in other_uid_list:
                     continue
-                other_uid_list.append(other_uid)
+                other_uid_list.append(int(other_uid))
+        self.logger.info("相关用户")
+        self.logger.info(other_uid_list)
 
         # 获取前K个用户
         ds_action_map = UserMessageActionMap()
@@ -87,6 +94,7 @@ class Hotspot(BasePage):
         for other_uid in other_uid_list:
             weight = 0
             for mid in mid_list:
+                mid = int(mid)
                 if ds_action_map.has_online_relation(mid, uid) is False:
                     weight += 1
             user_weight_dict[other_uid] = weight
@@ -99,21 +107,29 @@ class Hotspot(BasePage):
         for uid in user_weight_dict:
             if idx >= k:
                 break
-            other_uid_list.append(uid)
+            other_uid_list.append(uid[0])
             idx += 1
+        self.logger.info("前K个")
+        self.logger.info(other_uid_list)
         # 取前K个用户的文章ID
         other_mid_list = []
         for other_uid in other_uid_list:
             uid_key_name = "recommend_uid_" + str(other_uid)
             if r.exists(uid_key_name) is False:
                 continue
-            uid_mid_list = r.lrange(uid_key_name, 0, r.llen(uid_key_name))
+            uid_mid_list = r.lrange(uid_key_name, 0, -1)
             for other_mid in uid_mid_list:
+                other_mid = int(other_mid)
                 if other_mid in other_mid_list or other_mid in mid_list:
                     continue
                 other_mid_list.append(other_mid)
+        res_mid_list = other_mid_list[offset:page_size]
+        if len(res_mid_list) is 0:
+            return False
+        self.logger.info(other_mid_list)
+        self.logger.info(res_mid_list)
         ds_message = Message()
-        message_list = ds_message.get_message_list_by_message_id_list(other_mid_list)
+        message_list = ds_message.get_message_list_by_message_id_list(res_mid_list)
         return message_list
 
     def _get_normal_recommend_message_list(self, uid, offset, page_size):
@@ -129,11 +145,12 @@ class Hotspot(BasePage):
         key_name = "recommend_mid_list"
         if r.exists(key_name) is False:
             return False
-        mid_list = r.lrange(key_name, offset, page_size)
-        if len(mid_list) is 0:
+        r_mid_list = r.lrange(key_name, offset, offset + page_size - 1)
+        if len(r_mid_list) is 0:
             return False
-        for mid in mid_list:
-            mid_list[mid] = int(mid)
+        mid_list = []
+        for mid in r_mid_list:
+            mid_list.append(int(mid))
         ds_message = Message()
         message_list = ds_message.get_message_list_by_message_id_list(mid_list)
         return message_list
@@ -144,8 +161,8 @@ class Hotspot(BasePage):
         :param message_list:  
         :return: 
         """
-        if message_list is None:
-            return message_list
+        if message_list is None or message_list is False:
+            return []
         new_message_list = []
         for message in message_list:
             new_message_list.append(
