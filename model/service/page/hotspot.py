@@ -3,7 +3,7 @@
 # @author zh1995
 # @date   17-4-2
 # @brief
-
+import redis
 from base_page import BasePage
 from model.service.data.user_message_action_map import UserMessageActionMap
 from model.service.data.message import Message
@@ -43,18 +43,17 @@ class Hotspot(BasePage):
         record_count = ds_action_map.get_online_record_count_by_uid(uid)
         # 没有交互查数据库
         if record_count == 0:
-            hotspot_list = self._get_db_list(uid, offset, page_size)
+            hotspot_list = self._get_normal_recommend_message_list(uid, offset, page_size)
         # 有交互进行推荐策略
         else:
-            hotspot_list = self._get_recommend_list(uid, offset, page_size)
+            hotspot_list = self._get_user_recommend_message_list(uid, offset, page_size)
         return {
             "data": {
                 "list": self._format_message_list(hotspot_list)
             }
         }
 
-
-    def _get_db_list(self, uid, offset, page_size):
+    def _get_user_recommend_message_list(self, uid, offset, page_size):
         """
         
         :param uid: 
@@ -62,86 +61,62 @@ class Hotspot(BasePage):
         :param page_size: 
         :return: 
         """
-        ds_message = Message()
-        message_list = ds_message.get_message_list_by_look_num(offset, page_size)
-        return message_list
+        pool = redis.ConnectionPool(host="127.0.0.1", port=6379, db=0)
+        r = redis.StrictRedis(connection_pool=pool)
+        user_key_name = "recommend_uid_" + str(uid)
+        if r.exists(user_key_name) is False:
+            return False
+        mid_list = r.lrange(user_key_name, 0, r.llen(user_key_name))
+        if len(mid_list) is 0:
+            return False
+        # 获取与当前用户相关的其他用户
+        other_uid_list = []
+        for mid in mid_list:
+            mid_key_name = "recommend_mid_" + str(mid)
+            if r.exists(mid_key_name) is False:
+                continue
+            mid_uid_list = r.lrange(mid_key_name, 0, r.llen(mid_key_name))
+            for other_uid in mid_uid_list:
+                if other_uid == uid or other_uid in other_uid_list:
+                    continue
+                other_uid_list.append(other_uid)
 
-    def _get_mid_list_by_uid(self, uid):
-        """
-        
-        :param uid: 
-        :return: 
-        """
+        # 获取前K个用户
         ds_action_map = UserMessageActionMap()
-        msg_map_list = ds_action_map.get_msg_map_list_by_uid(uid)
-        message_id_list = []
-        for map in msg_map_list:
-            message_id_list.append(map["message_id"])
-        return message_id_list
-
-    def _get_uid_list_by_mid_list(self, message_id_list):
-        """
-        
-        :param message_id_list: 
-        :return: 
-        """
-        ds_action_map = UserMessageActionMap()
-        user_map_list = ds_action_map.get_user_map_list(message_id_list)
-        uid_list = []
-        for map in user_map_list:
-            uid_list.append(map["uid"])
-        return uid_list
-
-    def _get_uid_mid_dict(self, other_uid_list):
-        """
-        
-        :param other_uid_list: 
-        :return: 
-        """
-        uid_mid_dict = {}
-        for uid in other_uid_list:
-            uid_mid_dict[uid] = self._get_mid_list_by_uid(uid)
-        return uid_mid_dict
-
-    def _get_k_uid_list(self, cur_msg_id_list, other_uid_list, other_uid_mid_dict, k):
-        """
-        
-        :param cur_msg_id_list: 
-        :param other_uid_list: 
-        :param other_uid_mid_dict: 
-        :return: 
-        """
-        uid_map_dict = {}
-        for uid in other_uid_list:
-            # 计算集合差集
-            tmp = [val for val in cur_msg_id_list if val in other_uid_mid_dict[uid]]
-            uid_map_dict[uid] = len(tmp)
-
-        uid_map_dict = sorted(uid_map_dict, key=lambda asd: asd[1], reverse=True)
-        k_uid_list = []
+        user_weight_dict = {}
+        for other_uid in other_uid_list:
+            weight = 0
+            for mid in mid_list:
+                if ds_action_map.has_online_relation(mid, uid) is False:
+                    weight += 1
+            user_weight_dict[other_uid] = weight
+        user_weight_dict = sorted(user_weight_dict.iteritems(), key=lambda val: val[1], reverse=False)
+        k = 3
+        if len(other_uid_list) <= k:
+            k = len(other_uid_list)
+        other_uid_list = []
         idx = 0
-        for uid in uid_map_dict:
+        for uid in user_weight_dict:
             if idx >= k:
                 break
-            k_uid_list.append(uid)
+            other_uid_list.append(uid)
             idx += 1
-        return k_uid_list
+        # 取前K个用户的文章ID
+        other_mid_list = []
+        for other_uid in other_uid_list:
+            uid_key_name = "recommend_uid_" + str(other_uid)
+            if r.exists(uid_key_name) is False:
+                continue
+            uid_mid_list = r.lrange(uid_key_name, 0, r.llen(uid_key_name))
+            for other_mid in uid_mid_list:
+                if other_mid in other_mid_list or other_mid in mid_list:
+                    continue
+                other_mid_list.append(other_mid)
+        ds_message = Message()
+        message_list = ds_message.get_message_list_by_message_id_list(other_mid_list)
+        return message_list
 
-    def _get_mid_list_by_k_user(self, other_uid_mid_dict, k_uid_list, offset, page_size):
-        """
-        
-        :param other_uid_mid_dict: 
-        :param k_uid_list: 
-        :param offset: 
-        :param page_size: 
-        :return: 
-        """
-        mid_list = []
-        for uid in k_uid_list:
-            mid_list = list(set(mid_list).union(set(other_uid_mid_dict[uid])))
-        return mid_list[offset:page_size]
-
-    def _get_recommend_list(self, uid, offset, page_size):
+    def _get_normal_recommend_message_list(self, uid, offset, page_size):
         """
         
         :param uid: 
@@ -149,17 +124,16 @@ class Hotspot(BasePage):
         :param page_size: 
         :return: 
         """
-        # 获取当前用户有过交互的文章
-        cur_msg_id_list = self._get_mid_list_by_uid(uid)
-        # 取有交集的其他用户集合
-        other_uid_list = self._get_uid_list_by_mid_list(cur_msg_id_list)
-        # 获取其他用户的文章ID集合
-        other_uid_mid_dict = self._get_uid_mid_dict(other_uid_list)
-        # 取前k个用户
-        k = 3
-        k_uid_list = self._get_k_uid_list(cur_msg_id_list, other_uid_list, other_uid_mid_dict, k)
-        # 获取推送文章列表
-        mid_list = self._get_mid_list_by_k_user(other_uid_mid_dict, k_uid_list, offset, page_size)
+        pool = redis.ConnectionPool(host="127.0.0.1", port=6379, db=0)
+        r = redis.StrictRedis(connection_pool=pool)
+        key_name = "recommend_mid_list"
+        if r.exists(key_name) is False:
+            return False
+        mid_list = r.lrange(key_name, offset, page_size)
+        if len(mid_list) is 0:
+            return False
+        for mid in mid_list:
+            mid_list[mid] = int(mid)
         ds_message = Message()
         message_list = ds_message.get_message_list_by_message_id_list(mid_list)
         return message_list

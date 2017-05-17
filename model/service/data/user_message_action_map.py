@@ -111,3 +111,17 @@ class UserMessageActionMap(object):
         new_message_id_list = ', '.join(map(lambda x: '%s', message_id_list))
         sql_sentence = sql_sentence % (new_message_id_list,)
         return self._dao_sql.fetch_all(sql_sentence, tuple(message_id_list))
+
+    def has_online_relation(self, mid, uid):
+        """
+        
+        :param mid: 
+        :param uid: 
+        :return: 
+        """
+        sql_sentence = "SELECT count(1) FROM tblUserMessageActionMap WHERE status=1 AND uid=%s AND message_id=%s"
+        param_list = (uid, mid)
+        res = self._dao_sql.fetch_one(sql_sentence, param_list)
+        if res[0] > 0:
+            return True
+        return False

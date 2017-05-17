@@ -36,6 +36,9 @@ class MessageContent(BasePage):
         uid = int(self._get_param("uid"))
         message_id = int(self._get_param("message_id"))
 
+
+
+
         # 获取文章内容
         ds_message = Message()
         message_content = ds_message.get_message_content_by_message_id(message_id)
