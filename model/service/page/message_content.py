@@ -41,7 +41,9 @@ class MessageContent(BasePage):
         ds_message = Message()
         mem = memcache.Client(["127.0.0.1:12000"])
         mem_key_name = "msg_content_" + str(message_id)
-        message_content = {}
+        # message_content = {}
+        message_content = ds_message.get_message_content_by_message_id(message_id)
+        """
         if mem.get(mem_key_name) is None:
             message_content = ds_message.get_message_content_by_message_id(message_id)
             # 回写缓存
@@ -55,6 +57,7 @@ class MessageContent(BasePage):
             self.logger.info("读缓存")
             message_content = mem.get(mem_key_name)
             self.logger.info(message_content)
+        """
         # 获取文章下评论总数
         ds_comment = Comment()
         comment_num = ds_comment.get_comment_num_by_message_id(message_id)
