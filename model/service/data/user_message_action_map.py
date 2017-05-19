@@ -91,27 +91,6 @@ class UserMessageActionMap(object):
         res = self._dao_sql.fetch_all(sql_sentence, param_list)
         return res[0][0]
 
-    def get_msg_map_list_by_uid(self, uid):
-        """
-        
-        :param uid: 
-        :return: 
-        """
-        sql_sentence = "SELECT message_id FROM tblUserMessageActionMap WHERE uid=%s AND status=1"
-        param_list = (uid, )
-        return self._dao_sql.fetch_all(sql_sentence, param_list)
-
-    def get_user_map_list(self, message_id_list):
-        """
-        
-        :param message_id_list: 
-        :return: 
-        """
-        sql_sentence = "SELECT uid FROM tblUserMessageActionMap WHERE status=1 AND message_id in (%s)"
-        new_message_id_list = ', '.join(map(lambda x: '%s', message_id_list))
-        sql_sentence = sql_sentence % (new_message_id_list,)
-        return self._dao_sql.fetch_all(sql_sentence, tuple(message_id_list))
-
     def has_online_relation(self, mid, uid):
         """
         
@@ -125,3 +104,10 @@ class UserMessageActionMap(object):
         if res[0] > 0:
             return True
         return False
+
+    def get_message_good_num_by_uid_and_mid(self, uid, message_id):
+        sql_sentence = "SELECT count(1) FROM tblUserMessageActionMap WHERE status=1 AND uid=%s AND message_id=%s"
+        param_list = (uid, message_id)
+        res = self._dao_sql.fetch_one(sql_sentence, param_list)
+        return res[0]
+

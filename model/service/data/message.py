@@ -27,32 +27,15 @@ class Message(object):
         param_list = (tag_id, offset, limit)
         return self._dao_sql.fetch_all(sql_sentence, param_list)
 
-    def get_total_message_count(self):
-        """
-        
-        :return: 
-        """
-        sql_sentence = "SELECT COUNT(1) FROM tblMessage"
-        res = self._dao_sql.fetch_all(sql_sentence)
-        return res[0]
-
     def get_message_content_by_message_id(self, message_id):
         """
         
         :param message_id: 
         :return: 
         """
-        sql_sentence = "SELECT message_title, cover_pic, author_name, author_img, message_content, look_num, good_num, create_time FROM tblMessage WHERE message_id=%s"
+        sql_sentence = "SELECT message_title, cover_pic, author_name, author_img, message_content, look_num, create_time FROM tblMessage WHERE message_id=%s"
         param_list = (message_id, )
         return self._dao_sql.fetch_one(sql_sentence, param_list)
-
-    def get_hotspot_list(self):
-        """
-        
-        :return: 
-        """
-        sql_sentence = "SELECT message_id, message_title, cover_pic FROM tblMessage ORDER BY good_num DESC LIMIT 0, 4"
-        return self._dao_sql.fetch_all(sql_sentence)
 
     def get_good_num_by_message_id(self, message_id):
         """
@@ -99,13 +82,3 @@ class Message(object):
         sql_sentence = sql_sentence % (new_message_id_list, )
         return self._dao_sql.fetch_all(sql_sentence, tuple(message_id_list))
 
-    def get_message_list_by_look_num(self, offset=0, limit=10):
-        """
-        
-        :param offset: 
-        :param limit: 
-        :return: 
-        """
-        sql_sentence = "SELECT message_id, message_title, cover_pic FROM tblMessage ORDER BY look_num DESC AND create_time DESC LIMIT %s, %s"
-        param_list = (offset, limit)
-        return self._dao_sql.fetch_all(sql_sentence, param_list)

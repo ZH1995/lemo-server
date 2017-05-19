@@ -41,13 +41,12 @@ class MessageContent(BasePage):
         ds_message = Message()
         mem = memcache.Client(["127.0.0.1:12000"])
         mem_key_name = "msg_content_" + str(message_id)
-        # message_content = {}
+
         message_content = ds_message.get_message_content_by_message_id(message_id)
-        """
         if mem.get(mem_key_name) is None:
             message_content = ds_message.get_message_content_by_message_id(message_id)
             # 回写缓存
-            content_list = [message_content[0], message_content[1], message_content[2], message_content[3], message_content[4], message_content[5], message_content[6], message_content[7]]
+            content_list = [message_content[0], message_content[1], message_content[2], message_content[3], message_content[4], message_content[5], message_content[6]]
             mem.set(mem_key_name, content_list, 3600)
             self.logger.info("读库")
             self.logger.info(message_content)
@@ -57,7 +56,7 @@ class MessageContent(BasePage):
             self.logger.info("读缓存")
             message_content = mem.get(mem_key_name)
             self.logger.info(message_content)
-        """
+
         # 获取文章下评论总数
         ds_comment = Comment()
         comment_num = ds_comment.get_comment_num_by_message_id(message_id)
@@ -75,11 +74,14 @@ class MessageContent(BasePage):
         collect_action = 2
         has_collect = ds_user_message_action_map.get_online_id_by_uid_and_message_id(uid, message_id, collect_action)
 
+        # 获取文章点赞量
+        good_num = ds_user_message_action_map.get_message_good_num_by_uid_and_mid(uid, message_id)
+
         return {
-            "data": self._format_message_content(message_content, comment_num[0], has_good, has_collect),
+            "data": self._format_message_content(message_content, comment_num[0], has_good, has_collect, good_num),
         }
 
-    def _format_message_content(self, message_content, comment_num, has_good, has_collect):
+    def _format_message_content(self, message_content, comment_num, has_good, has_collect, good_num):
         """
 
         :param message_content: 
@@ -97,9 +99,9 @@ class MessageContent(BasePage):
             "authorImg": message_content[3],
             "messageContent": message_content[4],
             "lookNum": message_content[5],
-            "goodNum": message_content[6],
-            "createTime": time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(message_content[7])),
+            "createTime": time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(message_content[6])),
             "commentNum": comment_num[0],
             "hasGood": True if has_good is not None else False,
-            "hasCollect": True if has_collect is not None else False
+            "hasCollect": True if has_collect is not None else False,
+            "goodNum": good_num,
         }
